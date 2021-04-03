@@ -2,8 +2,17 @@ use std::{fs::{File, remove_file}, io::{self, Write}, path::Path, process::exit}
 
 use zip::ZipArchive;
 
+#[derive(Debug, Clone)]
+pub struct FileInfo {
+    authors: Vec<String>
+}
+#[derive(Debug, Clone)]
 pub struct List {
-    
+    schema: String,
+    file_info: FileInfo,
+    title: String,
+    description: String,
+    update_url: String
 }
 
 
@@ -12,6 +21,7 @@ pub struct Downloader {
     lists: Vec<List>
 }
 
+/* supposed to download/unpack and parse the lists */
 impl Downloader {
     pub fn new() -> Self {
         Self {
@@ -55,9 +65,16 @@ impl Downloader {
 
             let mut out = File::create(&path).unwrap();
             io::copy(&mut file, &mut out).unwrap();
-
         }
 
         Ok(())
+    }
+
+    pub async fn parse_lists(&mut self) {
+        /* TODO: impl serde_json for List struct */
+    }
+
+    pub async fn get_lists(&mut self) -> Vec<List> {
+        return self.lists.clone();
     }
 }
