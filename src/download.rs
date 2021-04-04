@@ -1,18 +1,19 @@
-use std::{fs::{File, remove_dir, remove_file}, io::{self, Write}, path::Path, process::exit};
-
+use std::{fs::{File, read_dir, read_to_string, remove_dir, remove_file}, io::{self, Write}, path::Path, process::exit};
+use serde::{Serialize, Deserialize};
 use zip::ZipArchive;
 
-#[derive(Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FileInfo {
-    authors: Vec<String>
-}
-#[derive(Debug, Clone)]
-pub struct List {
-    schema: String,
-    file_info: FileInfo,
+    authors: Vec<String>,
     title: String,
     description: String,
     update_url: String
+}
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct List {
+    #[serde(alias = "$schema")]
+    schema: String,
+    file_info: FileInfo
 }
 
 
@@ -70,7 +71,19 @@ impl Downloader {
         Ok(())
     }
 
-    pub async fn parse_lists(&mut self) {
-        /* TODO: impl serde_json for List struct */
+    /* parses json into custom struct */
+    pub async fn parse_lists(&mut self) -> Result<(), serde_json::Error> {
+        for file in read_dir("lists").unwrap() {
+            let file = file.unwrap();
+            let content = read_to_string("lists/".to_owned() + file.file_name().to_str().unwrap()).unwrap();
+
+            let list: List = serde_json::from_str(&content).unwrap();
+
+            self.lists.push(list);
+        }
+
+        println!("{:?}", self.lists);
+
+        Ok(())
     }
 }
