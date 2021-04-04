@@ -1,8 +1,10 @@
 use std::{fs::create_dir, path::Path, process::exit};
 
 mod download;
+mod handler;
 
 use download::Downloader;
+use handler::Handler;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

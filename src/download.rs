@@ -1,4 +1,4 @@
-use std::{fs::{File, remove_file}, io::{self, Write}, path::Path, process::exit};
+use std::{fs::{File, remove_dir, remove_file}, io::{self, Write}, path::Path, process::exit};
 
 use zip::ZipArchive;
 
@@ -52,29 +52,25 @@ impl Downloader {
         let file = File::open("lists/lists.zip").unwrap();
         let mut archive = ZipArchive::new(file).unwrap();
 
-        println!("{:?}", archive);
-
         /* iterate over all fils in archive */
         for i in 0..archive.len() {
             let mut file = archive.by_index(i).unwrap();
 
             let path = match file.enclosed_name() {
-                Some(path ) => path.to_owned(),
+                Some(path ) => "lists/".to_owned() + path.to_str().unwrap(),
                 None => exit(-1),
             };
 
             let mut out = File::create(&path).unwrap();
             io::copy(&mut file, &mut out).unwrap();
         }
-
+        
+        /* delete zip again */
+        remove_file("lists/lists.zip").unwrap();
         Ok(())
     }
 
     pub async fn parse_lists(&mut self) {
         /* TODO: impl serde_json for List struct */
-    }
-
-    pub async fn get_lists(&mut self) -> Vec<List> {
-        return self.lists.clone();
     }
 }
