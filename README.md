@@ -10,6 +10,7 @@ and be able to search them trough to see if somebody added you to one of their l
 
 ## TODO:
 - [ ] Download the JSON files automatically.
+   - [ ] Check if they have already been downloaded & up to date.
 - [ ] Make them searchable
 - [ ] Add cli commands to plp (panzer-list-parser)
 - [ ] Make them searchable using multiple accounts in an json file
