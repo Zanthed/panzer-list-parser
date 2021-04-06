@@ -9,7 +9,7 @@ This is for checking and downloading all panzer lists (also community ones) avai
 and be able to search them trough to see if somebody added you to one of their lists  
 
 ## TODO:
-- [ ] Download the JSON files automatically.
+- [x] Download the JSON files automatically.
    - [ ] Check if they have already been downloaded & up to date.
 - [ ] Make them searchable
 - [ ] Add cli commands to plp (panzer-list-parser)
