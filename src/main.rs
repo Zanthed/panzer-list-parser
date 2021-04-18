@@ -1,4 +1,5 @@
-use std::{fs::{create_dir, create_dir_all}, path::Path, process::exit};
+use core::panic;
+use std::{fs::{create_dir_all}, path::Path, io::ErrorKind};
 
 mod download;
 mod handler;
@@ -9,8 +10,17 @@ use handler::Handler;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if !Path::new("lists/misc").is_dir() {
-        create_dir_all("lists/misc").expect("Unable to create lists directory");
-        exit(-1);
+        println!("Creating directories lists/misc");
+        let dir = create_dir_all("lists/misc").unwrap_or_else(|e| {
+            if e.kind() == ErrorKind::PermissionDenied {
+                panic!("Failed to create directories list/misc. Permission denied.\n{:?}", e)
+            } else {
+                panic!("Unknown error creating directories lists/misc.\nError: {:?}", e)
+            }
+        });
+    }
+    else if Path::new("lists/misc").is_dir() {
+        println!("lists/misc already exists, continuing.")
     }
 
     let mut downloader = Downloader::new();
