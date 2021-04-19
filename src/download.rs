@@ -148,7 +148,11 @@ impl Downloader {
             println!("Removed lists.zip successfully.")
         }
 
-        Downloader::parse_lists(self);
+        println!("Parsing lists.");
+
+        Downloader::parse_lists(self).await.unwrap_or_else(|e| {
+            panic!("Unexpected error parsing lists.\nError: {:?}", e);
+        });
 
         Ok(())
     }
@@ -167,7 +171,8 @@ impl Downloader {
             let bytes = &resp.bytes().await?;
 
             let fname = "lists/".to_owned() + &dlist.file_info.title + ".json";
-            
+
+            // Ignore Moeb's list as it's just rules.
             if fname.contains("Moeb") {
                 continue;
             }
@@ -177,6 +182,7 @@ impl Downloader {
                     panic!("Failed to create {:?}. Permission denied.\n{:?}", fname, e)
                 } else { panic!("Unexpected error creating {:?}.\nError: {:?}", fname, e) }
             });
+            println!("Creating {:?}", fname);
             file.write_all(&bytes).unwrap_or_else(|e| {
                 if e.kind() == ErrorKind::PermissionDenied {
                     panic!("Failed to write data. Permission denied.\n{:?}", e)
@@ -188,6 +194,7 @@ impl Downloader {
                     panic!("Unexpected error writing data.\nError: {:?}", e)
                 }
             });
+            println!("Writing data to {:?}", fname);
             let filecontent = read_to_string(&fname).unwrap();
             let list: List = serde_json::from_str(&filecontent).unwrap();
 

@@ -26,7 +26,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut downloader = Downloader::new();
  
     downloader.download_lists("https://github.com/incontestableness/TF2BD-Community-Lists/raw/main/All.zip".to_string()).await?;
-    
 
     Ok(())
 }
